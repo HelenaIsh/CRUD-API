@@ -1,6 +1,9 @@
 import http, { IncomingMessage } from 'http';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface User {
   id?: string;
@@ -43,7 +46,6 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(users));
   } else if (path.match(/^\/api\/users\/[a-zA-Z0-9-]+$/) && method === 'GET') {
-    // GET user by ID
     const userId = path.split('/')[3];
 
     if (!isValidUUID(userId)) {
@@ -112,7 +114,6 @@ const server = http.createServer(async (req, res) => {
     path.match(/^\/api\/users\/[a-zA-Z0-9-]+$/) &&
     method === 'DELETE'
   ) {
-    // DELETE user by ID
     const userId = path.split('/')[3];
 
     if (!isValidUUID(userId)) {
@@ -135,7 +136,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
 });
