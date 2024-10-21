@@ -1,5 +1,5 @@
 import http from 'http';
-import { User } from '../src/server';
+import { User } from '../server';
 
 interface SimulatedResponse {
     status?: number; 
