@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-interface User {
+export interface User {
   id?: string;
   username: string;
   age: number;
@@ -140,3 +140,5 @@ const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
 });
+
+export default server;
