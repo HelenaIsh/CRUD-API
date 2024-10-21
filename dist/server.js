@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import http from 'http';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,7 +34,7 @@ function parseRequestBody(req) {
         req.on('error', (err) => reject(err));
     });
 }
-const server = http.createServer(async (req, res) => {
+const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const parsedUrl = parse(req.url || '', true);
     const path = parsedUrl.pathname || '';
     const method = req.method || '';
@@ -49,7 +58,7 @@ const server = http.createServer(async (req, res) => {
     }
     else if (path === '/api/users' && method === 'POST') {
         try {
-            const body = await parseRequestBody(req);
+            const body = yield parseRequestBody(req);
             const { username, age, hobbies } = body;
             if (!username || !age || !Array.isArray(hobbies)) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -72,7 +81,7 @@ const server = http.createServer(async (req, res) => {
             return res.end(JSON.stringify({ message: 'Invalid UUID' }));
         }
         try {
-            const body = await parseRequestBody(req);
+            const body = yield parseRequestBody(req);
             const { username, age, hobbies } = body;
             if (!username || !age || !Array.isArray(hobbies)) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -112,7 +121,7 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'Endpoint not found' }));
     }
-});
+}));
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
