@@ -1,15 +1,8 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import http from 'http';
 import { parse } from 'url';
 import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
+dotenv.config();
 const users = [];
 function isValidUUID(uuid) {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -32,7 +25,7 @@ function parseRequestBody(req) {
         req.on('error', (err) => reject(err));
     });
 }
-const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const server = http.createServer(async (req, res) => {
     const parsedUrl = parse(req.url || '', true);
     const path = parsedUrl.pathname || '';
     const method = req.method || '';
@@ -41,7 +34,6 @@ const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0,
         res.end(JSON.stringify(users));
     }
     else if (path.match(/^\/api\/users\/[a-zA-Z0-9-]+$/) && method === 'GET') {
-        // GET user by ID
         const userId = path.split('/')[3];
         if (!isValidUUID(userId)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -57,7 +49,7 @@ const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0,
     }
     else if (path === '/api/users' && method === 'POST') {
         try {
-            const body = yield parseRequestBody(req);
+            const body = await parseRequestBody(req);
             const { username, age, hobbies } = body;
             if (!username || !age || !Array.isArray(hobbies)) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -80,7 +72,7 @@ const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0,
             return res.end(JSON.stringify({ message: 'Invalid UUID' }));
         }
         try {
-            const body = yield parseRequestBody(req);
+            const body = await parseRequestBody(req);
             const { username, age, hobbies } = body;
             if (!username || !age || !Array.isArray(hobbies)) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -102,7 +94,6 @@ const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0,
     }
     else if (path.match(/^\/api\/users\/[a-zA-Z0-9-]+$/) &&
         method === 'DELETE') {
-        // DELETE user by ID
         const userId = path.split('/')[3];
         if (!isValidUUID(userId)) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -121,8 +112,8 @@ const server = http.createServer((req, res) => __awaiter(void 0, void 0, void 0,
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'Endpoint not found' }));
     }
-}));
-const PORT = 3000;
+});
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
 });
